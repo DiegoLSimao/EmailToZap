@@ -1,2 +1,2 @@
 # EmailToZap
- REceber um email e eviar pelo zap
+ Receber um email e eviar pelo zap
