@@ -14,14 +14,35 @@ namespace EmailToZap.Classes
 {
     public class Email
     {
+        //*** Classe singleton (instancia única)
+        //*** Construtor privado
+        private Email()
+        {
+            CarregarConfig();
+        }
+
         private string Provedor { get;  set; }
-        private string EmailOrigem { get;  set; }
+        public string EmailOrigem { get;  private set; }
         private string Senha { get;  set; }
 
-        public Email()
+        private static  Email _instancia;
+ 
+        public static Email Instancia
+        {
+            get
+            {
+                if(_instancia is null)
+                {
+                    _instancia= new Email();
+                }
+                return _instancia;
+            }
+        }
+
+
+        private void CarregarConfig()
         {
             var path = "C:\\Projetos\\EmailToZap\\EmailToZap\\config.tmp";
-
             Provedor = LerConfig(path, nameof(Provedor));
             EmailOrigem = LerConfig(path, nameof(EmailOrigem));
             Senha = LerConfig(path, nameof(Senha));
@@ -107,10 +128,7 @@ namespace EmailToZap.Classes
 
         public List<MimeMessage> ReceberEmailsIMAP()
         {
-            string email = EmailOrigem;
-            string password = Senha;
-
-            List<MimeMessage> list = new List<MimeMessage>();
+            List<MimeMessage> mensagens = new List<MimeMessage>();
 
             try
             {
@@ -119,20 +137,21 @@ namespace EmailToZap.Classes
                     // configurações do servidor de e-mail
                     client.ServerCertificateValidationCallback = (s, c, h, e) => true;
                     client.Connect("imap.gmail.com", 993, true);
-                    client.Authenticate(email, password);
+                    client.Authenticate(EmailOrigem, Senha);
                     client.Inbox.Open(FolderAccess.ReadOnly);
+
 
                     // ler os e-mails do servidor
                     for (int i = 0; i < client.Inbox.Count; i++)
                     {
                         var message = client.Inbox.GetMessage(i);
                         Console.WriteLine("De: " + message.From);
-                        Console.WriteLine("Assunto: " + message.Subject);
-                        Console.WriteLine("Corpo: " + message.TextBody);
-                        list.Add(message);
+                        //Console.WriteLine("Assunto: " + message.Subject);
+                        //Console.WriteLine("Corpo: " + message.TextBody);
+                        mensagens.Add(message);
                     }
                     client.Disconnect(true);
-                    return list;
+                    return mensagens;
                 }
             }
             catch (Exception ex)
@@ -141,8 +160,6 @@ namespace EmailToZap.Classes
                 return null;
             }
         }
-
-
 
 
     }  

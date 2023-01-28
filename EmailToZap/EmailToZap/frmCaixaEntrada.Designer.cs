@@ -41,7 +41,6 @@
             this.listboxCaixaEntrada.Name = "listboxCaixaEntrada";
             this.listboxCaixaEntrada.Size = new System.Drawing.Size(799, 407);
             this.listboxCaixaEntrada.TabIndex = 0;
-            this.listboxCaixaEntrada.SelectedIndexChanged += new System.EventHandler(this.listboxCaixaEntrada_SelectedIndexChanged);
             this.listboxCaixaEntrada.DoubleClick += new System.EventHandler(this.listboxCaixaEntrada_DoubleClick);
             // 
             // btnReceber

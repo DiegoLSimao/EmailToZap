@@ -18,20 +18,34 @@ namespace EmailToZap
         public frmEmail()
         {
             InitializeComponent();
+            btnAnexar.Visible = true;
+            btnEnviar.Visible = true;
+            PreencherCamposEnviarEmail();
         }
 
         //***Construtor que recebe um email
         public frmEmail(MimeMessage email)
         {
             InitializeComponent();
-            PreencherCampos(email);
+            btnAnexar.Visible= false;
+            btnEnviar.Visible= false;   
+            PreencherCamposEmailRecebido(email);
         }
 
-        private void PreencherCampos(MimeMessage email)
+        private void PreencherCamposEmailRecebido(MimeMessage email)
         {
-            txtEmailDestino.Text = email.From.ToString();
+            txtEmailDe.Text = email.From.ToString();
+            txtEmailPara.Text = Email.Instancia.EmailOrigem;
             txtAssunto.Text = email.Subject.ToString();
-            txtCorpoDoEmail.Text = email.Body.ToString();
+            txtCorpoDoEmail.Text = email.TextBody;
+        }
+
+        private void PreencherCamposEnviarEmail()
+        {
+            txtEmailDe.Text = Email.Instancia.EmailOrigem;
+            txtEmailPara.Text = string.Empty;
+            txtAssunto.Text = string.Empty;
+            txtCorpoDoEmail.Text = string.Empty;
         }
 
         private void frmEmail_Load(object sender, EventArgs e)
@@ -40,16 +54,15 @@ namespace EmailToZap
         }
 
         private void btnEnviar_Click(object sender, EventArgs e)
-        {
-            var email = new Email();
-            email.EnviarEmail(EmailsDestinatario(), txtAssunto.Text, txtCorpoDoEmail.Text, _anexos);
+        { 
+            Email.Instancia.EnviarEmail(EmailsDestinatario(), txtAssunto.Text, txtCorpoDoEmail.Text, _anexos);
             LimparCampos();
         }
 
         private List<string> EmailsDestinatario()
         {
             var ret = new List<string>();
-            var emailSemEspaco = txtEmailDestino.Text.Replace(" ", "");
+            var emailSemEspaco = txtEmailPara.Text.Replace(" ", "");
             var emails = emailSemEspaco.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var email in emails)
             {
@@ -98,14 +111,15 @@ namespace EmailToZap
             btnAnexar.Text = $"Anexar";
             txtAssunto.Text = string.Empty;
             txtCorpoDoEmail.Text = string.Empty;
-            txtEmailDestino.Text = string.Empty;
+            txtEmailDe.Text = string.Empty;
+            txtEmailPara.Text= string.Empty;
             btnEnviar.Enabled = false;
 
         }
 
         private void txtCorpoDoEmail_KeyDown(object sender, KeyEventArgs e)
         {
-            bool BotaoEnviar = string.IsNullOrEmpty(txtCorpoDoEmail.Text) | string.IsNullOrEmpty(txtAssunto.Text) | string.IsNullOrEmpty(txtEmailDestino.Text);
+            bool BotaoEnviar = string.IsNullOrEmpty(txtCorpoDoEmail.Text) | string.IsNullOrEmpty(txtAssunto.Text) | string.IsNullOrEmpty(txtEmailDe.Text);
 
             if (!BotaoEnviar)
             {
@@ -115,6 +129,12 @@ namespace EmailToZap
             {
                 btnEnviar.Enabled = false;
             }
+        }
+
+        private void btnReceber_Click(object sender, EventArgs e)
+        {
+            var f  = new frmCaixadeEntrada();
+            f.ShowDialog();
         }
     }
 }

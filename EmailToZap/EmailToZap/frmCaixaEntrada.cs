@@ -35,7 +35,13 @@ namespace EmailToZap
             {
                 ListaDeMensagens = new List<MimeMessage>();
             }
-            ListaDeMensagens = new Email().ReceberEmailsIMAP();
+            ListaDeMensagens = Email.Instancia.ReceberEmailsIMAP();
+
+            //***Mensagem se nulo
+            if(ListaDeMensagens is null)
+            {
+                MessageBox.Show("Ocorreu um erro ao receber emails!");
+            }
         }
 
         private void AdicionarMensagensNaLista()
@@ -43,7 +49,7 @@ namespace EmailToZap
             int j = 0;
             foreach (var email in ListaDeMensagens)
             {
-                string str = $"[{j}]-De: {email.From} ";
+                string str = $"[{j}] - De: {email.From} ";
                 listboxCaixaEntrada.Items.Add(str);
                 j++;
             }
@@ -54,15 +60,6 @@ namespace EmailToZap
             var indice = listboxCaixaEntrada.SelectedIndex;
             var frm = new frmEmail(ListaDeMensagens[indice]);
             frm.ShowDialog();
-        }
-
-
-
-
-        private void listboxCaixaEntrada_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var selecao = listboxCaixaEntrada.SelectedItem;
-            var dois = listboxCaixaEntrada.SelectedIndex;
         }
     }
 }
