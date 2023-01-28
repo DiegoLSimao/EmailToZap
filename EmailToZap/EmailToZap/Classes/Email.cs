@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MailKit.Net.Imap;
+using MailKit;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -6,7 +8,7 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
+using MimeKit;
 
 namespace EmailToZap.Classes
 {
@@ -103,7 +105,45 @@ namespace EmailToZap.Classes
             
         }
 
+        public List<MimeMessage> ReceberEmailsIMAP()
+        {
+            string email = EmailOrigem;
+            string password = Senha;
+
+            List<MimeMessage> list = new List<MimeMessage>();
+
+            try
+            {
+                using (ImapClient client = new ImapClient())
+                {
+                    // configurações do servidor de e-mail
+                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                    client.Connect("imap.gmail.com", 993, true);
+                    client.Authenticate(email, password);
+                    client.Inbox.Open(FolderAccess.ReadOnly);
+
+                    // ler os e-mails do servidor
+                    for (int i = 0; i < client.Inbox.Count; i++)
+                    {
+                        var message = client.Inbox.GetMessage(i);
+                        Console.WriteLine("De: " + message.From);
+                        Console.WriteLine("Assunto: " + message.Subject);
+                        Console.WriteLine("Corpo: " + message.TextBody);
+                        list.Add(message);
+                    }
+                    client.Disconnect(true);
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return null;
+            }
+        }
 
 
-    }
+
+
+    }  
 }

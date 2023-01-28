@@ -16,7 +16,7 @@ namespace EmailToZap
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmEmail());
+            Application.Run(new frmCaixadeEntrada());
         }
     }
 }

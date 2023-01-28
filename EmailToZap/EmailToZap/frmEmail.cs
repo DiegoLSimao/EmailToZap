@@ -1,4 +1,5 @@
 ﻿using EmailToZap.Classes;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +18,20 @@ namespace EmailToZap
         public frmEmail()
         {
             InitializeComponent();
+        }
+
+        //***Construtor que recebe um email
+        public frmEmail(MimeMessage email)
+        {
+            InitializeComponent();
+            PreencherCampos(email);
+        }
+
+        private void PreencherCampos(MimeMessage email)
+        {
+            txtEmailDestino.Text = email.From.ToString();
+            txtAssunto.Text = email.Subject.ToString();
+            txtCorpoDoEmail.Text = email.Body.ToString();
         }
 
         private void frmEmail_Load(object sender, EventArgs e)
