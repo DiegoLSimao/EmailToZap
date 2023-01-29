@@ -1,4 +1,5 @@
 ﻿using EmailToZap.Classes;
+using EmailToZap.Janelas;
 using MimeKit;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,13 @@ namespace EmailToZap
     public partial class frmEmail : Form
     {
         private List<string> _anexos = null;
+        private MimeMessage _email;
         public frmEmail()
         {
             InitializeComponent();
             btnAnexar.Visible = true;
             btnEnviar.Visible = true;
+            btnEncaminharZapZap.Visible = false;
             PreencherCamposEnviarEmail();
         }
 
@@ -28,7 +31,9 @@ namespace EmailToZap
         {
             InitializeComponent();
             btnAnexar.Visible= false;
-            btnEnviar.Visible= false;   
+            btnEnviar.Visible= false;
+            btnEncaminharZapZap.Visible = true;
+            _email = email;
             PreencherCamposEmailRecebido(email);
         }
 
@@ -135,6 +140,21 @@ namespace EmailToZap
         {
             var f  = new frmCaixadeEntrada();
             f.ShowDialog();
+        }
+
+        private void btnEncaminhaZapZap_Click(object sender, EventArgs e)
+        {
+            var input = new inputBox(1,"Número do telefone","Informe o número do telefone. Ex: 55 15 9xxxx-xxxx");
+            input.ShowDialog();
+
+            if (inputBox.Resultado == DialogResult.OK)
+            {
+                Zapzap zap = new Zapzap();
+                zap.EncaminharViaLinkZapZap(inputBox.EntradaDados, _email);
+            }
+
+
+      
         }
     }
 }
