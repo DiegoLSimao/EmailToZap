@@ -81,6 +81,9 @@ namespace EmailToZap
         {
             _anexos = Anexos();
 
+            if (_anexos is null)
+                return;
+
             if (_anexos.Count > 0)
             {
                 btnAnexar.Text = $"Anexar({_anexos.Count})";
@@ -155,6 +158,14 @@ namespace EmailToZap
 
 
       
+        }
+
+        private void btnZapAutomacao_Click(object sender, EventArgs e)
+        {
+            Zapzap zap = new Zapzap();
+            zap.AbrirZapWeb();
+            zap.ProcurarContatos("BlocoDeNotas");
+
         }
     }
 }

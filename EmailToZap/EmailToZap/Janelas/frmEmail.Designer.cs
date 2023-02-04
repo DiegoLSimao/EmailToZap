@@ -40,6 +40,7 @@
             this.lblEmailPara = new System.Windows.Forms.Label();
             this.btnReceber = new System.Windows.Forms.Button();
             this.btnEncaminharZapZap = new System.Windows.Forms.Button();
+            this.btnZapAutomacao = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnEnviar
@@ -149,11 +150,22 @@
             this.btnEncaminharZapZap.UseVisualStyleBackColor = true;
             this.btnEncaminharZapZap.Click += new System.EventHandler(this.btnEncaminhaZapZap_Click);
             // 
+            // btnZapAutomacao
+            // 
+            this.btnZapAutomacao.Location = new System.Drawing.Point(418, 446);
+            this.btnZapAutomacao.Name = "btnZapAutomacao";
+            this.btnZapAutomacao.Size = new System.Drawing.Size(75, 23);
+            this.btnZapAutomacao.TabIndex = 14;
+            this.btnZapAutomacao.Text = "zap";
+            this.btnZapAutomacao.UseVisualStyleBackColor = true;
+            this.btnZapAutomacao.Click += new System.EventHandler(this.btnZapAutomacao_Click);
+            // 
             // frmEmail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(670, 481);
+            this.Controls.Add(this.btnZapAutomacao);
             this.Controls.Add(this.btnEncaminharZapZap);
             this.Controls.Add(this.btnReceber);
             this.Controls.Add(this.lblEmailPara);
@@ -189,6 +201,7 @@
         private System.Windows.Forms.Label lblEmailPara;
         private System.Windows.Forms.Button btnReceber;
         private System.Windows.Forms.Button btnEncaminharZapZap;
+        private System.Windows.Forms.Button btnZapAutomacao;
     }
 }
 
