@@ -155,17 +155,21 @@ namespace EmailToZap
                 Zapzap zap = new Zapzap();
                 zap.EncaminharViaLinkZapZap(inputBox.EntradaDados, _email);
             }
-
-
-      
         }
 
         private void btnZapAutomacao_Click(object sender, EventArgs e)
         {
-            Zapzap zap = new Zapzap();
-            zap.AbrirZapWeb();
-            zap.ProcurarContatos("BlocoDeNotas");
+            Zapzap.Instancia.AbrirZapWeb();
+            
+            Timer t = new Timer();
+            t.Enabled = true;
+            t.Interval= 5000;
+            t.Tick += T_Tick;
+        }
 
+        private void T_Tick(object sender, EventArgs e)
+        {
+            Zapzap.Instancia.EnviarMensagem("BlocoDeNotas",$"{DateTime.Now} - Teste a cada 5 segundos!");
         }
     }
 }
