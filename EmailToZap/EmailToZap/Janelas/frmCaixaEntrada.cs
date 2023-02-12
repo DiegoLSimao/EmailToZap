@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 using MimeKit;
+using MailKit;
+using System.Reflection;
 
 namespace EmailToZap
 {
@@ -60,6 +62,14 @@ namespace EmailToZap
             var indice = listboxCaixaEntrada.SelectedIndex;
             var frm = new frmEmail(ListaDeMensagens[indice]);
             frm.ShowDialog();
+        }
+
+        private void btnExcluir_Click(object sender, EventArgs e)
+        {
+            var indice = listboxCaixaEntrada.SelectedIndex;
+
+            Email.Instancia.DeletarEmail(ListaDeMensagens[indice].MessageId);
+
         }
     }
 }

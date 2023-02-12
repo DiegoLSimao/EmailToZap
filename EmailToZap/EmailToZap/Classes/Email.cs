@@ -9,6 +9,10 @@ using System.Net.Mime;
 using System.Text.RegularExpressions;
 using System.Threading;
 using MimeKit;
+using System.Collections;
+using System.Data;
+using System.Windows.Forms;
+using System.Reflection;
 
 namespace EmailToZap.Classes
 {
@@ -126,33 +130,40 @@ namespace EmailToZap.Classes
             
         }
 
+        private ImapClient ConfigurarServidorEmail(FolderAccess folderAccess)
+        {
+            ImapClient client = new ImapClient();
+            
+            // configurações do servidor de e-mail
+            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            client.Connect("imap.gmail.com", 993, true);
+            client.Authenticate(EmailOrigem, Senha);
+            client.Inbox.Open(folderAccess);
+            return client;
+            
+        }
+
         public List<MimeMessage> ReceberEmailsIMAP()
         {
-            List<MimeMessage> mensagens = new List<MimeMessage>();
-
             try
             {
-                using (ImapClient client = new ImapClient())
+                Dictionary<string, MimeMessage> emailsBySender = new Dictionary<string, MimeMessage>();
+                ImapClient client = ConfigurarServidorEmail(FolderAccess.ReadOnly);
+
+                // ler os e-mails do servidor
+                for (int i = 0; i < client.Inbox.Count; i++)
                 {
-                    // configurações do servidor de e-mail
-                    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                    client.Connect("imap.gmail.com", 993, true);
-                    client.Authenticate(EmailOrigem, Senha);
-                    client.Inbox.Open(FolderAccess.ReadOnly);
-
-
-                    // ler os e-mails do servidor
-                    for (int i = 0; i < client.Inbox.Count; i++)
+                    var message = client.Inbox.GetMessage(i);
+                    string sender = message.From.ToString();
+                    if (!emailsBySender.ContainsKey(sender) || GetDataMaisRecente(emailsBySender[sender].Date.LocalDateTime, message.Date.LocalDateTime) == message.Date.LocalDateTime)
                     {
-                        var message = client.Inbox.GetMessage(i);
-                        Console.WriteLine("De: " + message.From);
-                        //Console.WriteLine("Assunto: " + message.Subject);
-                        //Console.WriteLine("Corpo: " + message.TextBody);
-                        mensagens.Add(message);
+                        emailsBySender[sender] = message;
                     }
-                    client.Disconnect(true);
-                    return mensagens;
                 }
+
+                client.Disconnect(true);
+                return new List<MimeMessage>(emailsBySender.Values);
+                
             }
             catch (Exception ex)
             {
@@ -162,5 +173,64 @@ namespace EmailToZap.Classes
         }
 
 
+        public DateTime GetDataMaisRecente(DateTime date1, DateTime date2)
+        {
+            return date1 > date2 ? date1 : date2;
+        }
+
+
+        public void DeletarEmail(string messageID)
+        {
+            try
+            {
+                ImapClient client = ConfigurarServidorEmail(FolderAccess.ReadWrite);
+                int indice = IndiceDaMensagem(client, messageID);
+                UniqueId uid = GetIdUnicoEmail(client, indice);
+
+                // excluir o e-mail
+                client.Inbox.AddFlags(uid, MessageFlags.Deleted, true);
+                client.Inbox.Expunge();
+                client.Disconnect(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private int IndiceDaMensagem(ImapClient client,string messageID)
+        {
+            for (int i = 0; i < client.Inbox.Count; i++)
+            {
+                var message = client.Inbox.GetMessage(i);
+
+                if(string.Equals(message.MessageId,messageID))
+                {
+                    return i;
+                }
+            }
+
+            return -1;         
+        }
+
+        public UniqueId GetIdUnicoEmail(ImapClient client, int index)
+        {
+            UniqueId uniqueId = UniqueId.Invalid;
+
+            try
+            {
+                // obtém a lista de mensagens de e-mail na pasta Inbox
+                var messages = client.Inbox.Fetch(0, -1, MessageSummaryItems.UniqueId);
+
+                // obtém o UniqueID da mensagem de e-mail na posição especificada
+                uniqueId = messages[index].UniqueId;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            return uniqueId;
+        }
     }  
 }
