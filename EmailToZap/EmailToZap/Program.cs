@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmailToZap.Janelas;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace EmailToZap
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmEmail());
+            Application.Run(new frmPrincipal());
         }
     }
 }
